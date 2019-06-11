@@ -25,7 +25,7 @@ public class HybridTrieTest
 	{
 		Scanner fileScan = new Scanner(new FileInputStream(args[0]));
 		// args[0] should be the name of the dictionary file
-		
+
 		Scanner inScan = new Scanner(System.in);
 		System.out.println("Please choose your trie type:");
 		System.out.println("0) Array based multiway trie nodes");
@@ -42,7 +42,7 @@ public class HybridTrieTest
 		// details on the constructor and rules for the hybrid tree structure,
 		// see the Assignment 2 specifications.
 		HybridTrieST<String> D = new HybridTrieST<String>(treeType);
-		
+
 		// Add all of the words from the dictionary file to the trie.  Note that
 		// your trie must maintain the words such that a traversal of the trie
 		// will access them in alphabetical order.  The order of the words will
@@ -84,9 +84,9 @@ public class HybridTrieTest
 					break;
 				case 3: System.out.println("a word and prefix");
 			}
-		}	
+		}
 		System.out.println();
-		
+
 		System.out.println("Adding some new words...");
 		D.put("aaa", "aaa");
 		D.put("aaaa", "aaaa");
@@ -95,16 +95,16 @@ public class HybridTrieTest
 		D.put("zaaa", "zaaa");
 		D.put("zzz", "zzz");
 		System.out.println();
-		
+
 		// Output the approximate size of the trie structure (not counting
 		// the sizes of the actual string values that are stored in the trie).
-		// This method will traverse through all of the nodes in the trie, 
+		// This method will traverse through all of the nodes in the trie,
 		// utilizing the getSize() method for each node in order to get the overall
 		// size of the trie.
 		System.out.println("Size of the Trie is " + D.getSize() + " bytes");
 		System.out.println();
-		
-		// The degreeDistribution() method should traverse the trie and return an 
+
+		// The degreeDistribution() method should traverse the trie and return an
 		// int [] of size K+1 (where K is the maximum possible degree of a node in
 		// the trie), indexed from 0 to K.  The value of each location dist[i] will
 		// be equal to the number of nodes with degree i in the trie.  Note that in
@@ -121,7 +121,7 @@ public class HybridTrieTest
 		System.out.println();
 		System.out.println("There were a total of " + total + " nodes in the trie");
 		System.out.println();
-		
+
 		// Count the number of nodes of a given type. For this method we are using the
 		// value 1 to indicate MTAlphaNode<?> nodes and the value 2 to indicated DLBNode<?>
 		// nodes.  The actual method will traverse all of the nodes of the trie and use
@@ -130,17 +130,17 @@ public class HybridTrieTest
 		// follows:  Your HybridTrieST should convert any nodes with a degree of 12 or
 		// above to MTAlphaNode<?> nodes, while those with degree 11 or below should remain
 		// as DLBNode<?> nodes.  Thus, if the hybrid version of the trie is being used,
-		// the number of MTAlphaNode<?> nodes below should be equal to the sum of the 
+		// the number of MTAlphaNode<?> nodes below should be equal to the sum of the
 		// distribution value from 12 to 26, while the number of DLBNode<?> nodes below
 		// should be equal to the sum of the distribution value from 0 to 11.
 		int nodes = D.countNodes(1);  // number of MTAlpha<?> Nodes
 		System.out.println("The trie contains " + nodes + " MTAlphaNodes");
 		System.out.println();
-		
+
 		nodes = D.countNodes(2);  // number of DLBNode<?> Nodes
 		System.out.println("The trie contains " + nodes + " DLBNodes");
 		System.out.println();
-		
+
 		System.out.println("Saving trie back to a file (should be alpha)");
 		// Save the trie in order back to args[1].  This method will traverse
 		// through all of the values in the trie in alpha order, saving all of them
@@ -148,5 +148,3 @@ public class HybridTrieTest
 		D.save(args[1]);
 	}
 }
-
-

@@ -84,15 +84,22 @@ public class MTAlphaNode<V> implements TrieNodeInt<V>
 
 	// Return the approximate size in bytes of the current node.
 	public int getSize(){
-		int reference_bytes = 4;
+		int reference_bytes = 4*R;
 		int int_bytes = 4;
-		int refs = R*reference_bytes
 
 		// Each node has the 26-reference array
 		// and an int for degree
-		return refs + int_bytes;
+		return reference_bytes + int_bytes;
 	}
 
+	// Return an Iterable collection of the references to all of the children
+  // of this node.  Do not put any null references into this result.  The
+  // order of the children as stored in the TrieNodeInt<V> node must be
+  // maintained in the returned Iterable.  The easiest way to do this is to
+  // put all of the references into a Queue and to return the Queue (since a
+  // Queue implements Iterable and maintains the order of the children).
+  // This method will allow us to access all of the children of a node without
+  // having to know how the node is actually implemented.
 	public Iterable<TrieNodeInt<V>> children(){
 
 	}

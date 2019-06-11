@@ -35,7 +35,6 @@ public class DLBNode<V> implements TrieNodeInt<V>
   }
 
 
-
   // Return the next node in the trie corresponding to character
   // c in the current node, or null if there is not next node for
   // that character.
@@ -55,12 +54,22 @@ public class DLBNode<V> implements TrieNodeInt<V>
   // branching by one more link).
   public void setNextNode(char c, TrieNodeInt<V> node){
     Nodelet nodelet = front;
-    while(nodelet.cval > c && nodelet != null) nodelet = nodelet.rightSib;
-    if (nodelet.child == null) {
-      degree ++;
-      nodelet.cval = c;
+
+    // search for sorted insertion nodelet by
+    // comparision to key c
+    while (nodelet.rightSib != null && nodelet.rightSib.cval < c){
+      nodelet = nodelet.rightSib;
     }
-    nodelet.child = node;
+    if (nodelet.rightSib == null){
+      nodelet.rightSib = new Nodelet();
+      nodelet = nodelet.rightSib;
+      nodelet.cval = c;
+      nodelet.child = node;
+      degree++;
+    }
+    else {
+
+    }
   }
 
   // Return the data at the current node (or null if there is no data)
@@ -91,10 +100,11 @@ public class DLBNode<V> implements TrieNodeInt<V>
   // fine.
   public int getSize(){
     // each node has (degree) nodelets
-    // an int for degree
+    // and an int for degree
+    // each nodelet has a char and 2 references
   }
 
-  // Return an Iterable collection of the references to all of the children
+  // Return an Iterable collsection of the references to all of the children
   // of this node.  Do not put any null references into this result.  The
   // order of the children as stored in the TrieNodeInt<V> node must be
   // maintained in the returned Iterable.  The easiest way to do this is to
