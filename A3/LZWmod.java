@@ -59,9 +59,10 @@ public class LZWmod {
             if (code < currentLength && input.available()>0)    // Add s to symbol table.
                 st.put(key, code++);
 
-            if (code == currentLength && (currentWidth < W || reset_flag>0)){
+            if (code == currentLength && (currentWidth < W || reset_flag == 1)){
               currentLength = currentLength<<1;
-              if (currentWidth++ == W && reset_flag>0){
+              currentWidth++;
+              if (currentWidth == W && reset_flag == 1){
                 st = new HybridTrieST<Integer>(2);
                 for (int i = 0; i < R; i++){
                     key = new StringBuilder(""+(char)i);
@@ -70,9 +71,12 @@ public class LZWmod {
                 code = R+1;
                 currentLength = 512;
                 currentWidth = 9;
+              }else{
+                key= new StringBuilder(""+c);
               }
+            }else{
+              key= new StringBuilder(""+c);
             }
-            key= new StringBuilder(""+c);
         }
         BinaryStdOut.write(R, currentWidth);
         BinaryStdOut.close();
@@ -105,15 +109,21 @@ public class LZWmod {
             if (i < currentLength)st[i++] = val + s.charAt(0);
             if (i == currentLength-1 && (currentWidth < W || reset_flag == 1)){
               currentLength = currentLength<<1;
-              if(currentWidth++ == W && reset_flag == 1){
+              currentWidth++;
+              if(currentWidth == W && reset_flag == 1){
                 currentLength = 512;
                 currentWidth = 9;
                 for (i = 0; i < R; i++)
                     st[i] = "" + (char) i;
-                st[i++] = "";    
-              };
+                st[i++] = "";
+                codeword = BinaryStdIn.readInt(currentWidth);
+                val = st[codeword];
+              }else{
+                val = s;
+              }
+            }else{
+              val = s;
             }
-            val = s;
         }
         BinaryStdOut.close();
     }
@@ -122,8 +132,7 @@ public class LZWmod {
     public static void main(String[] args) throws IOException{
         if      (args[0].equals("-")){
           if (args[1].equals("r")) compress(1);
-          else if (args[1].equals("n")) compress(0);
-          else throw new RuntimeException("Illegal command line argument");
+          else  compress(0);
         }
         else if (args[0].equals("+")) expand();
         else throw new RuntimeException("Illegal command line argument");
