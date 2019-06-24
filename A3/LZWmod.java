@@ -20,7 +20,7 @@ public class LZWmod {
     private static final int L = 130560;   // max num codewords = 2^9 + 2^10 + ... + 2^16
     private static final int W = 16;         // codeword width
 
-    public static void compress() throws IOException{
+    public static void compress(int reset_flag) throws IOException{
         BufferedInputStream input = new BufferedInputStream(System.in);
 
         HybridTrieST<Integer> st = new HybridTrieST<Integer>(2);
@@ -30,6 +30,9 @@ public class LZWmod {
         // initialize codeword max to 2^9 and word width to 9
         int currentLength=512;
         int currentWidth=9;
+
+        //write dictionary reset indicator
+        BinaryStdOut.write(reset_flag,1);
 
         //initialize symbol table with base characters
         for (int i = 0; i < R; i++){
@@ -56,9 +59,18 @@ public class LZWmod {
             if (code < currentLength && input.available()>0)    // Add s to symbol table.
                 st.put(key, code++);
 
-            if (code == currentLength && currentWidth < W){
+            if (code == currentLength && (currentWidth < W || reset_flag>0)){
               currentLength = currentLength<<1;
-              currentWidth++;
+              if (currentWidth++ == W && reset_flag>0){
+                st = new HybridTrieST<Integer>(2);
+                for (int i = 0; i < R; i++){
+                    key = new StringBuilder(""+(char)i);
+                    st.put(key, i);
+                }
+                code = R+1;
+                currentLength = 512;
+                currentWidth = 9;
+              }
             }
             key= new StringBuilder(""+c);
         }
@@ -70,7 +82,7 @@ public class LZWmod {
     public static void expand() {
         String[] st = new String[L];
         int i; // next available codeword value
-
+        int reset_flag; // indicator for dictionary reset in compression
         // initialize codeword max to 2^9 and word width to 9
         int currentLength=512;
         int currentWidth=9;
@@ -80,6 +92,7 @@ public class LZWmod {
             st[i] = "" + (char) i;
         st[i++] = "";                        // (unused) lookahead for EOF
 
+        reset_flag = BinaryStdIn.readInt(1);
         int codeword = BinaryStdIn.readInt(currentWidth);
         String val = st[codeword];
 
@@ -90,9 +103,15 @@ public class LZWmod {
             String s = st[codeword];
             if (i == codeword) s = val + val.charAt(0);   // special case hack
             if (i < currentLength)st[i++] = val + s.charAt(0);
-            if (i == currentLength-1 && currentWidth < W){
+            if (i == currentLength-1 && (currentWidth < W || reset_flag == 1)){
               currentLength = currentLength<<1;
-              currentWidth++;
+              if(currentWidth++ == W && reset_flag == 1){
+                currentLength = 512;
+                currentWidth = 9;
+                for (i = 0; i < R; i++)
+                    st[i] = "" + (char) i;
+                st[i++] = "";    
+              };
             }
             val = s;
         }
@@ -101,7 +120,11 @@ public class LZWmod {
 
 
     public static void main(String[] args) throws IOException{
-        if      (args[0].equals("-")) compress();
+        if      (args[0].equals("-")){
+          if (args[1].equals("r")) compress(1);
+          else if (args[1].equals("n")) compress(0);
+          else throw new RuntimeException("Illegal command line argument");
+        }
         else if (args[0].equals("+")) expand();
         else throw new RuntimeException("Illegal command line argument");
     }
