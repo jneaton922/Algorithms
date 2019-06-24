@@ -16,14 +16,20 @@
 
 public class LZWmod {
     private static final int R = 256;        // number of input chars
-    private static final int L = 4096;       // number of codewords = 2^W
-    private static final int W = 12;         // codeword width
+    //private static final int L = 4096;       // number of codewords = 2^W
+    private static final int L = 130560;   // max num codewords = 2^9 + 2^10 + ... + 2^16
+    private static final int W = 16;         // codeword width
 
     public static void compress() throws IOException{
         BufferedInputStream input = new BufferedInputStream(System.in);
 
         HybridTrieST<Integer> st = new HybridTrieST<Integer>(2);
         StringBuilder key;
+
+
+        // initialize codeword max to 2^9 and word width to 9
+        int currentLength=512;
+        int currentWidth=9;
 
         //initialize symbol table with base characters
         for (int i = 0; i < R; i++){
@@ -44,19 +50,19 @@ public class LZWmod {
             c  = key.charAt(key.length()-1);
             key.deleteCharAt(key.length()-1);
 
-            /*System.out.println("PrefixValue:");
-            System.out.println(st.searchPrefix(key));
-            System.out.println("Key:");
-            System.out.println(key.toString());*/
-
-            BinaryStdOut.write(st.get(key), W);      // Print s's encoding.
+            BinaryStdOut.write(st.get(key), currentWidth);      // Print s's encoding.
 
             key.append(c);
-            if (code < L && input.available()>0)    // Add s to symbol table.
+            if (code < currentLength && input.available()>0)    // Add s to symbol table.
                 st.put(key, code++);
+
+            if (code == currentLength && currentWidth < W){
+              currentLength = currentLength<<1;
+              currentWidth++;
+            }
             key= new StringBuilder(""+c);
         }
-        BinaryStdOut.write(R, W);
+        BinaryStdOut.write(R, currentWidth);
         BinaryStdOut.close();
     }
 
@@ -65,21 +71,29 @@ public class LZWmod {
         String[] st = new String[L];
         int i; // next available codeword value
 
+        // initialize codeword max to 2^9 and word width to 9
+        int currentLength=512;
+        int currentWidth=9;
+
         // initialize symbol table with all 1-character strings
         for (i = 0; i < R; i++)
             st[i] = "" + (char) i;
         st[i++] = "";                        // (unused) lookahead for EOF
 
-        int codeword = BinaryStdIn.readInt(W);
+        int codeword = BinaryStdIn.readInt(currentWidth);
         String val = st[codeword];
 
         while (true) {
             BinaryStdOut.write(val);
-            codeword = BinaryStdIn.readInt(W);
+            codeword = BinaryStdIn.readInt(currentWidth);
             if (codeword == R) break;
             String s = st[codeword];
             if (i == codeword) s = val + val.charAt(0);   // special case hack
-            if (i < L) st[i++] = val + s.charAt(0);
+            if (i < currentLength)st[i++] = val + s.charAt(0);
+            if (i == currentLength-1 && currentWidth < W){
+              currentLength = currentLength<<1;
+              currentWidth++;
+            }
             val = s;
         }
         BinaryStdOut.close();
