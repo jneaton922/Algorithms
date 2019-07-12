@@ -62,7 +62,7 @@ public class SecureChatServer {
             // must be synchronized so that chatters do not "interrupt"
             // each other.  For each chatter, get the cipher, then use
             // it to encode the message, and send the result.
-                        
+
     {
         for (int i = 0; i < numUsers; i++)
         {
@@ -127,7 +127,7 @@ public class SecureChatServer {
 					tempWriter.flush();
 					ObjectInputStream tempReader =
 							  new ObjectInputStream(newSocket.getInputStream());
-					
+
 					System.out.println("Sending E");
 					tempWriter.writeObject(E); tempWriter.flush();
 					System.out.println("Sending N");
@@ -137,7 +137,7 @@ public class SecureChatServer {
 					// Randomly determine which cipher will be used and send the
 					// appropriate string to the client.
 					if (test > 0.5)
-						encType = new String("Sub");	
+						encType = new String("Sub");
 					else
 						encType = new String("Add");
 					tempWriter.writeObject(encType);
@@ -150,7 +150,7 @@ public class SecureChatServer {
 					byte [] byteKey = bigKey.toByteArray();
 					System.out.println("Byte array length: " + byteKey.length);
 					SymCipher cipher = null;
-					
+
 					// Since the key is sent from the client as a positive BigInteger,
 					// when converted back the result could have an extra byte.  This
 					// code tests for that byte and removes it if necessary.
@@ -166,7 +166,7 @@ public class SecureChatServer {
 						System.arraycopy(byteKey, 1, temp, 0, 256);
 						byteKey = temp;
 					}
-					
+
 					if (encType.equals("Add"))
 					{
 						System.out.println("Chosen Cipher is Add128");
@@ -177,18 +177,18 @@ public class SecureChatServer {
 						System.out.println("Chosen Cipher is Substitute");
 						cipher = new Substitute(byteKey);
 					}
-						
+
 					System.out.println("Key: ");
 					for (int i = 0; i < byteKey.length; i++)
 						System.out.print(byteKey[i] + " ");
 					System.out.println();
-					
+
 					// Get the Client's name (note that this is encoded).  Then
 					// pass it on the all of the current chatters before adding
 					// the new chatter to the list.
 					byte [] newBytes = (byte []) tempReader.readObject();
 					String newName = cipher.decode(newBytes);
-					
+
 					newSocket.setSoTimeout(0);  // A 0 value for the timeout is actually
 					        // no timeout -- once the client is correctly connected there
 					        // can be an arbitrary delay between messages.
@@ -232,7 +232,7 @@ public class SecureChatServer {
 	{
 		System.out.println("Something went wrong " + e);
 	}
-    finally 
+    finally
     {
         System.out.println("Server shutting down");
 
@@ -298,7 +298,7 @@ public class SecureChatServer {
                     String newMsg = null;
 					byte[] newBytes = null;
                     try {
-                         newBytes = (byte []) myReader.readObject(); 
+                         newBytes = (byte []) myReader.readObject();
 						 newMsg = myCipher.decode(newBytes);
 						 if (newBytes == null || newMsg.equals("CLIENT CLOSING"))
 							 	ok = false;
@@ -320,5 +320,3 @@ public class SecureChatServer {
          SecureChatServer Secure = new SecureChatServer(30);
     }
 }
-
-
