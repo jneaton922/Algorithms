@@ -1,12 +1,12 @@
-
+import java.util.*;
 
 
 public class Add128 implements SymCipher {
   byte[] key;
-  static int keySize = 256;
+  static int keySize = 128;
 
   public Add128(){
-    SecureRandom random = new SecureRandom();
+    Random random = new Random();
     key = new byte[keySize];
     random.nextBytes(key);
   }
@@ -25,23 +25,23 @@ public class Add128 implements SymCipher {
 	// prior to encrypting it.  Also note that String S could have an arbitrary
 	// length, so your cipher may have to "wrap" when encrypting.
 	public byte [] encode(String S){
-    byte[] bytes = s.getBytes();
+    byte[] bytes = S.getBytes();
+    byte[] encrypted = new byte[bytes.length];
     int i = 0;
-    for (byte b : bytes){
-      bytes[i] += key[i];
-      i = (i+1)%keySize;
+    for (i=0;i<bytes.length;i++){
+      encrypted[i] = (byte)(bytes[i]+key[i]);
     }
-    return bytes;
+    return encrypted;
   }
 
 	// Decrypt the array of bytes and generate and return the corresponding String.
 	public String decode(byte [] bytes){
     int i = 0;
-    for (byte b : bytes){
-      bytes[i] -= key[i];
-      i = (i+1)%keySize;
+    byte[] decrypted = new byte[bytes.length];
+    for (i=0;i<bytes.length;i++){
+      decrypted[i] = (byte)(bytes[i]-key[i]);
     }
-    return bytes.toString();
+    return new String(decrypted);
   }
 
 }

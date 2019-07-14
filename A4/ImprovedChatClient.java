@@ -1,10 +1,10 @@
 /* CS 1501
-   Primitive chat client. 
+   Primitive chat client.
    This client connects to a server so that messages can be typed and forwarded
    to all other clients.  Try it out in conjunction with ImprovedChatServer.java.
    You will need to modify / update this program to incorporate the secure elements
    as specified in the Assignment sheet.  Note that the PORT used below is not the
-   one required in the assignment -- for your SecureChatClient be sure to 
+   one required in the assignment -- for your SecureChatClient be sure to
    change the port that so that it matches the port specified for the secure
    server.
 */
@@ -123,5 +123,3 @@ public class ImprovedChatClient extends JFrame implements Runnable, ActionListen
          JR.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 }
-
-
